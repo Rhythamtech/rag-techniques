@@ -16,9 +16,11 @@ def main():
         print("\nSelect an option:")
         print("1. Create Q&A index")
         print("2. Create summary index")
-        print("3. Query using Q&A index")
-        print("4. Query using summary index")
-        print("5. Exit")
+        print("3. Create chunking index")
+        print("4. Query using chunking index")
+        print("5. Query using Q&A index")
+        print("6. Query using summary index")
+        print("7. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -29,7 +31,24 @@ def main():
         elif choice == "2":
             docs = rag.load_documents(urls)
             rag.create_summary_index(docs)
+
         elif choice == "3":
+            docs = rag.load_documents(urls)
+            chunk_docs = rag.split_documents(docs)
+            rag.create_chunking_index(chunk_docs)
+
+        elif choice == "4":
+          user_query = input("\nEnter your query: ")
+          results = rag.query_chunking_index(user_query)
+          context = ""
+          for res in results:
+              context += convert_json_to_toon(res.page_content)
+              context += "\n" + "-" * 10
+          answer = rag.get_answer(user_query, context)
+          print("\nAnswer:")
+          print(answer)
+
+        elif choice == "5":
             user_query = input("\nEnter your query: ")
             results = rag.query_qna_index(user_query)
             context = ""
@@ -39,7 +58,7 @@ def main():
             answer = rag.get_answer(user_query, context)
             print("\nAnswer:")
             print(answer)
-        elif choice == "4":
+        elif choice == "6":
             user_query = input("\nEnter your query: ")
             results = rag.query_summary_index(user_query)
             context = ""
@@ -49,7 +68,7 @@ def main():
             answer = rag.get_answer(user_query, context)
             print("\nAnswer:")
             print(answer)
-        elif choice == "5":
+        elif choice == "7":
             break
         else:
             print("Invalid choice. Please try again.")

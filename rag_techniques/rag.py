@@ -134,6 +134,15 @@ Input:
         )
         logging.info("Summary vector store created successfully.")
 
+    def create_chunking_index(self,docs):
+        QdrantVectorStore.from_documents(
+            documents=docs,
+            embedding=self.embedder,
+            collection_name="RAG Chunking Docs",
+            url=self.qdrant_url
+        )
+        logging.info("Chunking vector store created successfully.")
+
     def query_qna_index(self, user_query):
         logging.info(f"Querying QnA index with: {user_query}")
         vector_store = QdrantVectorStore.from_existing_collection(
@@ -153,6 +162,15 @@ Input:
         )
         results = vector_store.similarity_search(query=user_query, k=3)
         return results
+    
+    def query_chunking_index(self, user_query):
+        logging.info(f"Querying chunking index with: {user_query}")
+        vector_store = QdrantVectorStore.from_existing_collection(
+            embedding=self.embedder,
+            collection_name="RAG Chunking Docs",
+            url=self.qdrant_url)
+        result = vector_store.similarity_search(query=user_query, k=3)
+        return result
 
     def get_answer(self, user_query, context):
         logging.info("Getting answer from LLM.")
